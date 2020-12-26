@@ -16,7 +16,7 @@ type Post {
     description: String
     createdDate: String
     likes: Int
-    creadtedBy: User!
+    createdBy: User!
     messages: Message
 }
 
@@ -28,8 +28,11 @@ type Message {
 
 type Query {
     getUsers: [String]
+    getPosts: [Post]
 }
 
+
 type Mutation {
-    signUp(username: String!, email: String!, password: String!): User
+    addPost(title: String!, imageUrl: String, categories: [String]!, description: String!, creatorId: ID!):Post!
+    signUp(username: String!, email: String!, password: String!):User
 }
