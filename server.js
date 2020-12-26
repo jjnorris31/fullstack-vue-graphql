@@ -8,6 +8,7 @@ const path = require('path');
 
 const filePath = path.join(__dirname, 'typeDefs.gql');
 const typeDefs = fs.readFileSync(filePath, 'utf-8');
+const resolvers = require('./resolvers');
 
 mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true, useUnifiedTopology: true})
 	.then(() => console.log("DB Connected"))
@@ -15,6 +16,7 @@ mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true, useUnifiedTopolo
 
 const server = new ApolloServer({
 	typeDefs,
+	resolvers,
 	context: {
 		User,
 		Post
