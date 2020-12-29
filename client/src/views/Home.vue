@@ -15,6 +15,7 @@
 <script>
 // @ is an alias to /src
 import {gql} from 'apollo-boost';
+import store from 'vuex'
 
 export default {
   name: 'Home',
@@ -24,6 +25,11 @@ export default {
     return {
       posts: [],
     }
+  },
+  methods: {
+    ...store.mapActions([
+      'getPosts'
+    ])
   },
   apollo: {
     getPosts: {
@@ -47,6 +53,9 @@ export default {
         console.log({err});
       }
     }
+  },
+  async mounted() {
+    await this.getPosts();
   }
 }
 </script>
