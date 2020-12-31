@@ -1,8 +1,22 @@
 <template>
-  <v-container v-if="posts">
+  <v-container>
+    <v-layout row>
+      <v-dialog v-model="LOADING_POSTS" persistent fullscreen>
+        <v-container fill-height>
+          <v-layout row justify-center align-center>
+            <v-progress-circular indeterminate
+                                 :size="70"
+                                 :width="7"
+                                 color="secondary"></v-progress-circular>
+          </v-layout>
+        </v-container>
+      </v-dialog>
+    </v-layout>
     <v-flex xs12>
-      <v-carousel v-bind="{'cycle': true}" interval="3000">
-        <v-carousel-item  v-for="post in posts"
+      <v-carousel v-if="!LOADING_POSTS"
+                  v-bind="{'cycle': true}"
+                  interval="3000">
+        <v-carousel-item  v-for="post in ALL_POSTS"
                           :src="post.imageUrl"
                           :key="post._id">
           <h1 id="carousel__id">{{post.title}}</h1>
@@ -14,7 +28,6 @@
 
 <script>
 // @ is an alias to /src
-import {gql} from 'apollo-boost';
 import store from 'vuex'
 
 export default {
@@ -26,33 +39,16 @@ export default {
       posts: [],
     }
   },
+  computed: {
+    ...store.mapGetters([
+      'ALL_POSTS',
+      'LOADING_POSTS'
+    ])
+  },
   methods: {
     ...store.mapActions([
       'getPosts'
     ])
-  },
-  apollo: {
-    getPosts: {
-      query: gql`
-        query {
-          getPosts {
-            _id
-            title
-            imageUrl
-          }
-        }
-      `,
-      // smart query
-      result({data, loading}) {
-        if (!loading) {
-          // data has our info
-          this.posts = data.getPosts;
-        }
-      },
-      error(err) {
-        console.log({err});
-      }
-    }
   },
   async mounted() {
     await this.getPosts();
