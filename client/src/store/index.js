@@ -46,6 +46,8 @@ export default new Vuex.Store({
           mutation: SIGN_IN,
           variables: payload
         });
+        // getting a token
+        localStorage.setItem('token',  response.data.signIn.token);
         commit('SET_TOKEN', response.data.signIn.token);
       } catch (e) {
         console.log(e);
