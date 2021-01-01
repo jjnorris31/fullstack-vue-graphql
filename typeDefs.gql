@@ -31,8 +31,13 @@ type Query {
     getPosts: [Post]
 }
 
+type Token {
+    token: String!
+}
+
 
 type Mutation {
     addPost(title: String!, imageUrl: String, categories: [String]!, description: String!, creatorId: ID!):Post!
-    signUp(username: String!, email: String!, password: String!):User
+    signIn(username: String!, password: String!): Token
+    signUp(username: String!, email: String!, password: String!): Token
 }

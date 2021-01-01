@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import {defaultClient as apolloClient} from "../main";
-import {GET_POSTS} from "../queries";
+import {GET_POSTS, SIGN_IN} from "../queries";
 
 Vue.use(Vuex)
 
@@ -9,6 +9,7 @@ export default new Vuex.Store({
   state: {
     posts: [],
     loadingPosts: false,
+    token: '',
   },
   getters: {
     ALL_POSTS: (state) => {
@@ -25,6 +26,9 @@ export default new Vuex.Store({
     SET_LOADING_POSTS(state, loading) {
       state.loadingPosts = loading;
     },
+    SET_TOKEN(state, token) {
+      state.token = token;
+    }
   },
   actions: {
     async getPosts({commit}) {
@@ -35,6 +39,17 @@ export default new Vuex.Store({
       });
       commit('SET_POST', response.data.getPosts);
       commit('SET_LOADING_POSTS', false);
+    },
+    async SIGN_IN_USER({commit}, payload) {
+      try {
+        const response = await apolloClient.mutate({
+          mutation: SIGN_IN,
+          variables: payload
+        });
+        commit('SET_TOKEN', response.data.signIn.token);
+      } catch (e) {
+        console.log(e);
+      }
     }
   }
   ,
