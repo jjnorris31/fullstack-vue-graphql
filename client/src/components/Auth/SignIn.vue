@@ -1,57 +1,71 @@
 <template>
   <v-container>
-    <!-- SignIn title -->
-    <v-layout row wrap>
-      <v-flex xs12 sm6 offset-sm3>
+    <v-row>
+      <v-col cols="6" offset="3">
         <h1>Welcome back!</h1>
-      </v-flex>
+      </v-col>
+      <v-col cols="6"
+             offset="3">
+        <v-layout row
+                  wrap
+                  v-if="ERROR">
+          <v-flex xs12>
+            <form-alert :message="ERROR"></form-alert>
+          </v-flex>
+        </v-layout>
+        <v-card color="secondary"
+                class="px-4 py-2"
+                dark>
+          <v-container>
+            <v-form @submit.prevent="signIn()">
+              <v-layout row>
+                <v-flex xs12>
+                  <v-text-field prepend-icon="mdi-account"
+                                v-model="username"
+                                label="Username"
+                                type="text">
+                  </v-text-field>
+                </v-flex>
+              </v-layout>
+              <v-layout row>
+                <v-flex xs12>
+                  <v-text-field prepend-icon="mdi-lock"
+                                label="Password"
+                                v-model="password"
+                                type="password">
+                  </v-text-field>
+                </v-flex>
+              </v-layout>
 
-      <!-- SignIn form -->
-      <v-layout row wrap>
-        <v-flex xs12 sm6 offset-sm3>
-          <v-card color="secondary" dark>
-            <v-container>
-              <v-form @submit.prevent="signIn()">
-                <v-layout row>
-                  <v-flex xs12>
-                    <v-text-field prepend-icon="mdi-home"
-                                  v-model="username"
-                                  label="Username"
-                                  type="text">
-                    </v-text-field>
-                  </v-flex>
-                </v-layout>
-                <v-layout row>
-                  <v-flex xs12>
-                    <v-text-field prepend-icon="mdi-home"
-                                  label="Password"
-                                  v-model="password"
-                                  type="password">
-                    </v-text-field>
-                  </v-flex>
-                </v-layout>
+              <v-row justify="center">
+                <v-col cols="12"
+                       class="d-flex justify-center">
+                  <v-btn color="accent"
+                         :loading="LOADING_POSTS"
+                         type="submit">Signin
+                  </v-btn>
+                </v-col>
+                <v-col cols="12"
+                       class="d-flex justify-center">
+                  <h4>Don't have an account?</h4>
+                </v-col>
+              </v-row>
 
-                <v-layout row>
-                  <v-flex xs12>
-                    <v-btn color="accent" type="submit">Signin</v-btn>
-                    <h3>Don't have an account?</h3>
-                    <router-link to="/posts"></router-link>
-                  </v-flex>
-                </v-layout>
-              </v-form>
-            </v-container>
-          </v-card>
-        </v-flex>
-      </v-layout>
-    </v-layout>
+            </v-form>
+          </v-container>
+        </v-card>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
 <script>
 import store from 'vuex';
+import FormAlert from "../Shared/FormAlert";
 
 export default {
   name: "SignIn",
+  components: {FormAlert},
   data: () => {
     return {
       username: '',
@@ -68,6 +82,8 @@ export default {
   computed: {
     ...store.mapGetters([
       'USER',
+      'ERROR',
+      'LOADING_POSTS'
     ])
   },
   methods: {

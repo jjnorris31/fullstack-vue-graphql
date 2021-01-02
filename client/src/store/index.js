@@ -12,6 +12,7 @@ export default new Vuex.Store({
     loadingPosts: false,
     token: '',
     user: null,
+    error: null,
   },
   getters: {
     ALL_POSTS: (state) => {
@@ -22,7 +23,10 @@ export default new Vuex.Store({
     },
     USER: (state) => {
       return state.user;
-    }
+    },
+    ERROR: (state) => {
+      return state.error;
+    },
   },
   mutations: {
     SET_POST(state, posts) {
@@ -36,6 +40,12 @@ export default new Vuex.Store({
     },
     SET_USER(state, user) {
       state.user = user;
+    },
+    SET_ERROR(state, error) {
+      state.error = error;
+    },
+    CLEAR_ERROR(state) {
+      state.error = null;
     }
   },
   actions: {
@@ -49,6 +59,8 @@ export default new Vuex.Store({
       commit('SET_LOADING_POSTS', false);
     },
     async SIGN_IN_USER({commit}, payload) {
+      commit('CLEAR_ERROR');
+      commit('SET_LOADING_POSTS', true);
       // clear malformed token
       localStorage.setItem('token', '');
       try {
@@ -60,8 +72,10 @@ export default new Vuex.Store({
         localStorage.setItem('token',  response.data.signIn.token);
         router.go();
         commit('SET_TOKEN', response.data.signIn.token);
+        commit('SET_LOADING_POSTS', false)
       } catch (e) {
-        console.log(e);
+        commit('SET_LOADING_POSTS', false)
+        commit('SET_ERROR', e);
       }
     },
     SIGN_OUT_USER({commit}) {

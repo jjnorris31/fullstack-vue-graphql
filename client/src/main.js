@@ -7,8 +7,12 @@ import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import '@mdi/font/css/materialdesignicons.css'
 import ApolloClient from 'apollo-boost';
 import VueApollo from 'vue-apollo';
+import FormAlert from "./components/Shared/FormAlert";
 
 Vue.use(VueApollo);
+
+// for global component use
+Vue.component('form-alert', FormAlert);
 
 // setup ApolloClient
 export const defaultClient = new ApolloClient({
