@@ -17,11 +17,15 @@
                 class="px-4 py-2"
                 dark>
           <v-container>
-            <v-form @submit.prevent="signIn()">
+            <v-form @submit.prevent="signIn()"
+                    ref="userForm"
+                    lazy-validation
+                    v-model="isFormValid">
               <v-layout row>
                 <v-flex xs12>
                   <v-text-field prepend-icon="mdi-account"
                                 v-model="username"
+                                :rules="usernameRules"
                                 label="Username"
                                 type="text">
                   </v-text-field>
@@ -31,6 +35,7 @@
                 <v-flex xs12>
                   <v-text-field prepend-icon="mdi-lock"
                                 label="Password"
+                                :rules="passwordRules"
                                 v-model="password"
                                 type="password">
                   </v-text-field>
@@ -41,6 +46,7 @@
                 <v-col cols="12"
                        class="d-flex justify-center">
                   <v-btn color="accent"
+                         :disabled="!isFormValid"
                          :loading="LOADING_POSTS"
                          type="submit">Signin
                   </v-btn>
@@ -68,8 +74,19 @@ export default {
   components: {FormAlert},
   data: () => {
     return {
+      isFormValid: false,
       username: '',
       password: '',
+      usernameRules: [
+        // check if username in input
+        username => !!username || 'Username is required',
+        // make sure username is less than 12 characters
+        username => username.length < 10 || 'Username must be less than 10 characters'
+      ],
+      passwordRules: [
+        password => !!password || 'Password is required',
+        password => password.length > 3 || 'Password must be at least 7 characters'
+      ],
     }
   },
   watch: {
@@ -91,7 +108,9 @@ export default {
       'SIGN_IN_USER'
     ]),
     async signIn() {
-      await this.SIGN_IN_USER({username: this.username, password: this.password});
+      if (this.$refs.userForm.validate()) {
+        await this.SIGN_IN_USER({username: this.username, password: this.password});
+      }
     }
   }
 }
