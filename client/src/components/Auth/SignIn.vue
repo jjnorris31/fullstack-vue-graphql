@@ -81,11 +81,11 @@ export default {
         // check if username in input
         username => !!username || 'Username is required',
         // make sure username is less than 12 characters
-        username => username.length < 10 || 'Username must be less than 10 characters'
+        username => username.length > 6 || 'Username must be less than 10 characters'
       ],
       passwordRules: [
         password => !!password || 'Password is required',
-        password => password.length > 3 || 'Password must be at least 7 characters'
+        password => password.length > 2 || 'Password must be at least 7 characters'
       ],
     }
   },

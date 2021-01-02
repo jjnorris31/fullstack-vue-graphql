@@ -62,6 +62,15 @@
         <v-fade-transition group hide-on-leave>
           <router-view :key="1"></router-view>
         </v-fade-transition>
+
+        <v-snackbar v-model="authSnackbar"
+                    bottom
+                    left
+                    color="success"
+                    :timeout="5000">
+          <v-icon class="mr-3">mdi-circle</v-icon>
+          <h4>You are now signed in!</h4>
+        </v-snackbar>
       </v-container>
     </v-main>
   </v-app>
@@ -75,6 +84,16 @@ export default {
   name: 'App',
 
   components: {
+  },
+  watch: {
+    USER(newValue, oldValue) {
+      console.log(newValue);
+      console.log(oldValue);
+      // if we had no value for user before, show snackbar
+      if (!oldValue) {
+        this.authSnackbar = true;
+      }
+    }
   },
   computed: {
     ...mapGetters([
@@ -121,6 +140,7 @@ export default {
 
   data: () => ({
     drawer: false,
+    authSnackbar: false,
   }),
 };
 </script>
