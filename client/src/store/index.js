@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import {defaultClient as apolloClient} from "../main";
-import {GET_POSTS, SIGN_IN} from "../queries";
+import {GET_POSTS, SIGN_IN, GET_CURRENT_USER} from "../queries";
+import router from '../router';
 
 Vue.use(Vuex)
 
@@ -10,6 +11,7 @@ export default new Vuex.Store({
     posts: [],
     loadingPosts: false,
     token: '',
+    user: null,
   },
   getters: {
     ALL_POSTS: (state) => {
@@ -17,6 +19,9 @@ export default new Vuex.Store({
     },
     LOADING_POSTS: (state) => {
       return state.loadingPosts;
+    },
+    USER: (state) => {
+      return state.user;
     }
   },
   mutations: {
@@ -28,6 +33,9 @@ export default new Vuex.Store({
     },
     SET_TOKEN(state, token) {
       state.token = token;
+    },
+    SET_USER(state, user) {
+      state.user = user;
     }
   },
   actions: {
@@ -41,6 +49,8 @@ export default new Vuex.Store({
       commit('SET_LOADING_POSTS', false);
     },
     async SIGN_IN_USER({commit}, payload) {
+      // clear malformed token
+      localStorage.setItem('token', '');
       try {
         const response = await apolloClient.mutate({
           mutation: SIGN_IN,
@@ -48,10 +58,27 @@ export default new Vuex.Store({
         });
         // getting a token
         localStorage.setItem('token',  response.data.signIn.token);
+        router.go();
         commit('SET_TOKEN', response.data.signIn.token);
       } catch (e) {
         console.log(e);
       }
+    },
+    SIGN_OUT_USER({commit}) {
+      // clear the user in the state
+      commit('SET_USER', null);
+      // remove token in local storage
+      localStorage.removeItem('token');
+      // redirect home - kick user oyt of private pages
+      router.push('/');
+    },
+    async GET_CURRENT_USER({commit}) {
+      commit('SET_LOADING_POSTS', true);
+      const {data} = await apolloClient.query({
+        query: GET_CURRENT_USER
+      });
+      commit('SET_LOADING_POSTS', false);
+      commit('SET_USER', data.getCurrentUser)
     }
   }
   ,

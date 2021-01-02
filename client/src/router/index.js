@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
+import AuthGuard from "../AuthGuard";
 
 Vue.use(VueRouter)
 
@@ -24,6 +25,12 @@ const routes = [
     path: '/signIn',
     name: 'SignIn',
     component: () => import(`../components/Auth/SignIn`)
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import(`../components/Auth/Profile`),
+    beforeEnter: AuthGuard
   },
 
 ]

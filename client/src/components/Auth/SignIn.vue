@@ -58,6 +58,18 @@ export default {
       password: '',
     }
   },
+  watch: {
+    USER(newValue) {
+      if (newValue) {
+        this.$router.push('/');
+      }
+    },
+  },
+  computed: {
+    ...store.mapGetters([
+      'USER',
+    ])
+  },
   methods: {
     ...store.mapActions([
       'SIGN_IN_USER'

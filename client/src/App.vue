@@ -69,14 +69,19 @@
 
 <script>
 
+import {mapGetters} from 'vuex';
+
 export default {
   name: 'App',
 
   components: {
   },
   computed: {
+    ...mapGetters([
+      'USER'
+    ]),
     horizontalNavbarItems() {
-      return [
+      let unsignedItems = [
         {
           icon: 'mdi-chat',
           title: 'Posts',
@@ -91,8 +96,26 @@ export default {
           icon: 'mdi-pencil',
           title: 'Sign up',
           link: '/signup',
+        }];
+
+      let signedItems = [
+        {
+          icon: 'mdi-chat',
+          title: 'Posts',
+          link: '/posts',
         },
-      ];
+        {
+          icon: 'mdi-lock-open',
+          title: 'Profile',
+          link: '/profile',
+        },
+        {
+          icon: 'mdi-pencil',
+          title: 'Sign out',
+          link: '/',
+        }];
+
+      return this.USER ? signedItems : unsignedItems;
     }
   },
 
