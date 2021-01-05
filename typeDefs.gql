@@ -29,6 +29,7 @@ type Message {
 type Query {
     getUsers: [String]
     getPosts: [Post]
+    getCurrentUser: User
 }
 
 type Token {

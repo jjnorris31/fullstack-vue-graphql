@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import {defaultClient as apolloClient} from "../main";
-import {GET_POSTS, SIGN_IN, GET_CURRENT_USER} from "../queries";
+import {GET_POSTS, SIGN_IN, GET_CURRENT_USER, SIGN_UP} from "../queries";
 import router from '../router';
 
 Vue.use(Vuex)
@@ -13,6 +13,7 @@ export default new Vuex.Store({
     token: '',
     user: null,
     error: null,
+    authError: null,
   },
   getters: {
     ALL_POSTS: (state) => {
@@ -27,6 +28,9 @@ export default new Vuex.Store({
     ERROR: (state) => {
       return state.error;
     },
+    AUTH_ERROR: (state) => {
+      return state.authError;
+    }
   },
   mutations: {
     SET_POST(state, posts) {
@@ -46,6 +50,9 @@ export default new Vuex.Store({
     },
     CLEAR_ERROR(state) {
       state.error = null;
+    },
+    SET_AUTH_ERROR(state, authError) {
+      state.authError = authError;
     }
   },
   actions: {
@@ -78,6 +85,24 @@ export default new Vuex.Store({
         commit('SET_ERROR', e);
       }
     },
+    async SIGN_UP_USER({commit}, payload) {
+      commit('CLEAR_ERROR');
+      commit('SET_LOADING_POSTS', true);
+      try {
+        const response = await apolloClient.mutate({
+          mutation: SIGN_UP,
+          variables: payload
+        });
+        // getting a token
+        localStorage.setItem('token',  response.data.signUp.token);
+        router.go();
+        commit('SET_TOKEN', response.data.signUp.token);
+        commit('SET_LOADING_POSTS', false)
+      } catch (e) {
+        commit('SET_LOADING_POSTS', false)
+        commit('SET_ERROR', e);
+      }
+    },
     SIGN_OUT_USER({commit}) {
       // clear the user in the state
       commit('SET_USER', null);
@@ -88,11 +113,16 @@ export default new Vuex.Store({
     },
     async GET_CURRENT_USER({commit}) {
       commit('SET_LOADING_POSTS', true);
-      const {data} = await apolloClient.query({
-        query: GET_CURRENT_USER
-      });
-      commit('SET_LOADING_POSTS', false);
-      commit('SET_USER', data.getCurrentUser)
+      try {
+        const {data} = await apolloClient.query({
+          query: GET_CURRENT_USER
+        });
+        commit('SET_LOADING_POSTS', false);
+        commit('SET_USER', data.getCurrentUser)
+      } catch (e) {
+        commit('SET_AUTH_ERROR', e);
+        commit('SET_LOADING_POSTS', false);
+      }
     }
   }
   ,

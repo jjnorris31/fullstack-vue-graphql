@@ -27,6 +27,11 @@ const routes = [
     component: () => import(`../components/Auth/SignIn`)
   },
   {
+    path: '/signUp',
+    name: 'SignUp',
+    component: () => import(`../components/Auth/SignUp`)
+  },
+  {
     path: '/profile',
     name: 'Profile',
     component: () => import(`../components/Auth/Profile`),

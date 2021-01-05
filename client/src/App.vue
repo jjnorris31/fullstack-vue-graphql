@@ -55,6 +55,15 @@
           {{item.title}}
         </v-btn>
       </v-toolbar-items>
+      <v-toolbar-items class="hidden-xs-only" v-if="this.USER">
+        <v-btn depressed
+               color="primary"
+               @click="signOut()"
+               tile>
+          <v-icon left class="hidden-xs-only">mdi-pencil</v-icon>
+          Sign out
+        </v-btn>
+      </v-toolbar-items>
     </v-app-bar>
     <!-- app content -->
     <v-main>
@@ -71,6 +80,16 @@
           <v-icon class="mr-3">mdi-circle</v-icon>
           <h4>You are now signed in!</h4>
         </v-snackbar>
+
+        <v-snackbar v-model="authErrorSnackbar"
+                    v-if="authErrorSnackbar"
+                    bottom
+                    left
+                    color="error"
+                    :timeout="5000">
+          <v-icon class="mr-3">mdi-circle</v-icon>
+          <h4>{{AUTH_ERROR.message}}</h4>
+        </v-snackbar>
       </v-container>
     </v-main>
   </v-app>
@@ -78,7 +97,7 @@
 
 <script>
 
-import {mapGetters} from 'vuex';
+import {mapGetters, mapActions} from 'vuex';
 
 export default {
   name: 'App',
@@ -87,17 +106,21 @@ export default {
   },
   watch: {
     USER(newValue, oldValue) {
-      console.log(newValue);
-      console.log(oldValue);
       // if we had no value for user before, show snackbar
       if (!oldValue) {
         this.authSnackbar = true;
       }
-    }
+    },
+    AUTH_ERROR(value) {
+      if (value !== null) {
+        this.authErrorSnackbar = true;
+      }
+    },
   },
   computed: {
     ...mapGetters([
-      'USER'
+      'USER',
+      'AUTH_ERROR',
     ]),
     horizontalNavbarItems() {
       let unsignedItems = [
@@ -127,21 +150,25 @@ export default {
           icon: 'mdi-lock-open',
           title: 'Profile',
           link: '/profile',
-        },
-        {
-          icon: 'mdi-pencil',
-          title: 'Sign out',
-          link: '/',
         }];
 
       return this.USER ? signedItems : unsignedItems;
     }
   },
-
   data: () => ({
     drawer: false,
     authSnackbar: false,
+    authErrorSnackbar: false,
   }),
+  methods: {
+    ...mapActions([
+      'SIGN_OUT_USER'
+    ]),
+    async signOut() {
+      await this.SIGN_OUT_USER();
+      this.$router.push('/');
+    },
+  }
 };
 </script>
 
